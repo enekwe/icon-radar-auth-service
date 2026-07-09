@@ -1,0 +1,95 @@
+// Auth Service Prisma Schema
+// Focused on User, Session, and PasswordHistory models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String
+  name            String?
+  role            UserRole    @default(USER)
+  isActive        Boolean     @default(true)
+  isEmailVerified Boolean     @default(false)
+  emailVerifiedAt DateTime?
+  emailVerificationToken String? @unique
+  emailVerificationExpires DateTime?
+  lastLoginAt     DateTime?
+  loginAttempts   Int         @default(0)
+  lockedUntil     DateTime?
+  passwordResetToken String?  @unique
+  passwordResetExpires DateTime?
+  passwordResetAttempts Int   @default(0)
+  lastPasswordResetAt DateTime?
+  twoFactorSecret String?
+  twoFactorEnabled Boolean   @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  sessions        Session[]
+  passwordHistory PasswordHistory[]
+
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@index([passwordResetToken])
+  @@index([emailVerificationToken])
+  @@index([email, isActive])
+  @@index([role, isActive])
+  @@index([isActive, lastLoginAt])
+}
+
+model Session {
+  id                String    @id @default(uuid())
+  userId            String
+  accessToken       String    @unique
+  refreshToken      String    @unique
+  accessExpiresAt   DateTime
+  refreshExpiresAt  DateTime
+  ipAddress         String?
+  userAgent         String?
+  isRevoked         Boolean   @default(false)
+  revokedAt         DateTime?
+  lastUsedAt        DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([accessToken])
+  @@index([refreshToken])
+  @@index([isRevoked])
+  @@index([userId, isRevoked])
+  @@index([userId, lastUsedAt])
+  @@index([accessExpiresAt, isRevoked])
+}
+
+model PasswordHistory {
+  id           String   @id @default(uuid())
+  userId       String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  GUEST
+  API_USER
+}

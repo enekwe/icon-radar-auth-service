@@ -32,8 +32,8 @@ export class EmailService {
         case 'smtp':
           this.initializeSMTP();
           break;
-        case 'sendgrid':
-          this.initializeSendGrid();
+        case 'brevo':
+          this.initializeBrevo();
           break;
         case 'ses':
           this.initializeSES();
@@ -72,24 +72,26 @@ export class EmailService {
     logger.info('Email service initialized with SMTP', { host: smtpHost, port: smtpPort });
   }
 
-  private initializeSendGrid(): void {
-    const sendgridApiKey = process.env.SENDGRID_API_KEY;
+  private initializeBrevo(): void {
+    const brevoApiKey = process.env.BREVO_API_KEY;
+    const brevoEmail = process.env.BREVO_EMAIL;
 
-    if (!sendgridApiKey) {
-      logger.warn('SendGrid API key not configured, email service will be disabled');
+    if (!brevoApiKey || !brevoEmail) {
+      logger.warn('Brevo credentials not configured, email service will be disabled');
       return;
     }
 
     this.transporter = nodemailer.createTransport({
-      host: 'smtp.sendgrid.net',
+      host: 'smtp-relay.brevo.com',
       port: 587,
+      secure: false, // use STARTTLS
       auth: {
-        user: 'apikey',
-        pass: sendgridApiKey,
+        user: brevoEmail,
+        pass: brevoApiKey,
       },
     });
 
-    logger.info('Email service initialized with SendGrid');
+    logger.info('Email service initialized with Brevo');
   }
 
   private initializeSES(): void {

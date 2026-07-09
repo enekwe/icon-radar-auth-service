@@ -27,7 +27,7 @@
   "author": "Icon Radar Team",
   "license": "MIT",
   "dependencies": {
-    "@enekwe/icon-radar-shared": "file:../icon-radar-shared",
+    "@enekwe/icon-radar-shared": "^1.0.2",
     "@prisma/client": "^5.7.1",
     "@types/uuid": "^10.0.0",
     "bcryptjs": "^2.4.3",

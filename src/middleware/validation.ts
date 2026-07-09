@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 /**
  * Validation schemas for auth requests

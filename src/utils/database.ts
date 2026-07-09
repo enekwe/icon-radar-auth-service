@@ -1,11 +1,11 @@
 import { PrismaClient } from '@prisma/client';
-import logger from './logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
-let prisma: PrismaClient;
+let _prismaInstance: PrismaClient | null = null;
 
 export const getPrismaClient = (): PrismaClient => {
-  if (!prisma) {
-    prisma = new PrismaClient({
+  if (!_prismaInstance) {
+    _prismaInstance = new PrismaClient({
       log: [
         { level: 'query', emit: 'event' },
         { level: 'error', emit: 'stdout' },
@@ -15,11 +15,13 @@ export const getPrismaClient = (): PrismaClient => {
 
     // Log slow queries in development
     if (process.env.NODE_ENV === 'development') {
-      prisma.$on('query' as never, (e: any) => {
-        if (e.duration > 100) {
+      _prismaInstance.$on('query' as never, (e: any) => {
+        const duration = typeof e.duration === 'string' ? parseFloat(e.duration) : e.duration;
+        if (duration > 100) {
           logger.warn('Slow query detected', {
             query: e.query,
-            duration: `${e.duration}ms`,
+            duration,
+            durationDisplay: `${duration}ms`,
           });
         }
       });
@@ -27,11 +29,11 @@ export const getPrismaClient = (): PrismaClient => {
 
     // Graceful shutdown
     process.on('beforeExit', async () => {
-      await prisma.$disconnect();
+      await _prismaInstance?.$disconnect();
     });
   }
 
-  return prisma;
+  return _prismaInstance;
 };
 
 export const prisma = getPrismaClient();

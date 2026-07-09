@@ -20,7 +20,7 @@ import {
   validatePasswordStrength,
   validateEmail,
 } from '../utils/crypto';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 const PASSWORD_RESET_EXPIRY_MS = parseInt(process.env.PASSWORD_RESET_EXPIRY_MS || '3600000', 10); // 1 hour
 const EMAIL_VERIFICATION_EXPIRY_MS = parseInt(

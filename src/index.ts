@@ -2,11 +2,10 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import { v4 as uuidv4 } from 'uuid';
+import { logger, correlationId, requestLogger } from '@enekwe/icon-radar-shared';
 import authRoutes from './routes/auth';
 import { prisma } from './utils/database';
 import { emailService } from './services/emailService';
-import logger from './utils/logger';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
@@ -30,32 +29,9 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Correlation ID middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const correlationId = (req.headers['x-correlation-id'] as string) || uuidv4();
-  (req as any).correlationId = correlationId;
-  res.setHeader('x-correlation-id', correlationId);
-  next();
-});
-
-// Request logging
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const start = Date.now();
-
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    logger.info('HTTP Request', {
-      correlationId: (req as any).correlationId,
-      method: req.method,
-      path: req.path,
-      statusCode: res.statusCode,
-      duration: `${duration}ms`,
-      userAgent: req.headers['user-agent'],
-    });
-  });
-
-  next();
-});
+// Correlation ID and request logging middleware from shared package
+app.use(correlationId);
+app.use(requestLogger);
 
 // Rate limiting
 const limiter = rateLimit({

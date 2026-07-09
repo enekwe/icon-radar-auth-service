@@ -4,7 +4,7 @@ import {
   PasswordResetEmailData,
   EmailOptions,
 } from '../types';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 export class EmailService {
   private transporter: nodemailer.Transporter | null = null;

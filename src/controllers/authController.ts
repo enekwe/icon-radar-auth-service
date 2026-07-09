@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../types';
 import { authService } from '../services/authService';
 import { getClientIp } from '../utils/crypto';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 /**
  * Register new user

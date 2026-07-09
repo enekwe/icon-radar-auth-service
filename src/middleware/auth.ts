@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../types';
 import { tokenService } from '../services/tokenService';
 import { prisma } from '../utils/database';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 /**
  * Authentication middleware

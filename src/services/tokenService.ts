@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { JWTPayload, TokenPair, SessionInfo } from '../types';
 import { prisma } from '../utils/database';
 import { calculateExpirationDate } from '../utils/crypto';
-import logger from '../utils/logger';
+import { logger } from '@enekwe/icon-radar-shared';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';

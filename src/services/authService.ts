@@ -402,6 +402,7 @@ export class AuthService {
         isActive: true,
         isEmailVerified: true,
         emailVerifiedAt: true,
+        lastLoginAt: true,
         createdAt: true,
         updatedAt: true,
       },

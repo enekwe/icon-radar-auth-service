@@ -1,11 +1,11 @@
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { JWTPayload, TokenPair, SessionInfo } from '../types';
 import { prisma } from '../utils/database';
 import { calculateExpirationDate } from '../utils/crypto';
 import { logger } from '@enekwe/icon-radar-shared';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key';
+const JWT_SECRET = (process.env.JWT_SECRET || 'your-secret-key') as Secret;
+const JWT_REFRESH_SECRET = (process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key') as Secret;
 const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY || '15m';
 const REFRESH_TOKEN_EXPIRY = process.env.REFRESH_TOKEN_EXPIRY || '7d';
 
@@ -15,7 +15,7 @@ export class TokenService {
    */
   generateAccessToken(userId: string, email: string, role: string): string {
     return jwt.sign({ userId, email, role }, JWT_SECRET, {
-      expiresIn: ACCESS_TOKEN_EXPIRY,
+      expiresIn: ACCESS_TOKEN_EXPIRY as any,
     });
   }
 
@@ -24,7 +24,7 @@ export class TokenService {
    */
   generateRefreshToken(userId: string): string {
     return jwt.sign({ userId }, JWT_REFRESH_SECRET, {
-      expiresIn: REFRESH_TOKEN_EXPIRY,
+      expiresIn: REFRESH_TOKEN_EXPIRY as any,
     });
   }
 

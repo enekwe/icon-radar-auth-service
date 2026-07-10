@@ -43,8 +43,15 @@ RUN npx prisma generate
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
 
-# Create logs directory
-RUN mkdir -p logs
+# Create non-root user for better security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Create logs directory with proper ownership
+RUN mkdir -p logs && chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
 
 # Set environment variables
 ENV NODE_ENV=production
